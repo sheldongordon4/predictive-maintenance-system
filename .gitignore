@@ -1,0 +1,44 @@
+# macOS system files
+.DS_Store
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Data, models, and logs
+*.csv
+*.pkl
+*.h5
+*.log
+*.zip
+*.npy
+
+# Environment / secrets
+.env
+*.secret
+*.key
+
+# Build & dist artifacts
+build/
+dist/
+*.egg-info/
+
+# IDE / Editor files
+.vscode/
+.idea/
+
+# Project-specific ignores
+RUL Demo.mp4
+Damage Propagation Modeling.pdf
+*.docx
+
