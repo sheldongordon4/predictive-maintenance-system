@@ -119,7 +119,7 @@ If you already have a trained model and simply want to run the app without retra
    streamlit run monitor_engine.py
    ```
 
-> 💡 If you want to use a different path, update `monitor_engine.py` accordingly under the model-loading section.
+> If you want to use a different path, update `monitor_engine.py` accordingly under the model-loading section.
 
 ---
 
