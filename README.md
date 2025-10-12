@@ -52,7 +52,7 @@ Tested three regression models:
 
 ---
 
-## ⚙️ Environment Setup
+## Environment Setup
 
 ### 1️⃣ Clone the repository
 ```bash
