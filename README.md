@@ -27,8 +27,6 @@ Each entry contains:
 - 3 operational settings
 - 21 sensor readings
 
-📎 [Dataset on Kaggle](https://www.kaggle.com/datasets/behrad3d/nasa-cmaps)
-
 ---
 
 ## Feature Engineering
@@ -50,11 +48,82 @@ Tested three regression models:
 | Random Forest Regressor  | 31.74 |
 | **LightGBM**              | **31.32** (selected) |
 
-✅ LightGBM was selected for its speed, accuracy, and built-in feature importance insights.
+✅ LightGBM was selected for its efficiency, explainability, and strong predicitve performance.
 
 ---
 
-## Maintenance Use Case
+## ⚙️ Environment Setup
+
+### 1️⃣ Clone the repository
+```bash
+git clone https://github.com/sheldongordon4/predictive-maintenance-system.git
+cd predictive-maintenance-system
+```
+
+### 2️⃣ Create and activate a virtual environment
+```bash
+python3 -m venv .venv
+source .venv/bin/activate      # macOS/Linux
+# .venv\Scripts\activate.bat   # Windows
+```
+
+### 3️⃣ Install dependencies
+If you have `requirements.txt`:
+```bash
+pip install -r requirements.txt
+```
+
+Otherwise:
+```bash
+pip install numpy pandas scikit-learn lightgbm matplotlib seaborn streamlit joblib
+```
+
+---
+
+## Training the Model (Notebook)
+
+1. Launch Jupyter:
+   ```bash
+   jupyter notebook
+   ```
+2. Open and run:
+   - `engine_model_dev.ipynb` → trains and evaluates the RUL model.  
+3. Save the trained model:
+   ```python
+   import joblib
+   joblib.dump(model, "lightgbm_model.pkl")
+   ```
+
+This file will be saved locally and is automatically ignored by Git.
+
+---
+
+## Pretrained Model Loading
+
+If you already have a trained model and simply want to run the app without retraining:
+
+1. Place your model file here:
+   ```
+   predictive-maintenance-system/models/lightgbm_model.pkl
+   ```
+   (Create the `models/` folder if it doesn’t exist.)
+
+2. In `monitor_engine.py`, ensure the model is loaded like this:
+   ```python
+   import joblib
+   model = joblib.load("models/lightgbm_model.pkl")
+   ```
+
+3. Then start the app:
+   ```bash
+   streamlit run monitor_engine.py
+   ```
+
+> 💡 If you want to use a different path, update `monitor_engine.py` accordingly under the model-loading section.
+
+---
+
+## Maintenance Decision Logic
 
 The system classifies engine health based on RUL:
 
@@ -71,34 +140,61 @@ This enables:
 
 ---
 
-## Streamlit Dashboard
+## File Management & Ignore Rules
 
-Launch the app with:
+`.gitignore` ensures unnecessary or large files aren’t tracked:
+```
+# Python / Jupyter
+__pycache__/
+.ipynb_checkpoints/
 
+# System
+.DS_Store
+
+# Large or sensitive
+*.mp4
+*.pdf
+*.docx
+*.pkl
+.env
+```
+
+---
+
+## Optional: Using Git LFS for Large Files
+If you must version large binaries (e.g., `.pkl`, `.mp4`):
+```bash
+git lfs install
+git lfs track "*.mp4" "*.pkl"
+git add .gitattributes
+git commit -m "chore: track large files with Git LFS"
+git push
+```
+
+---
+
+## Run the Streamlit App
+Once the model exists:
 ```bash
 streamlit run monitor_engine.py
 ```
 
 Features:
-
-- Real-time RUL prediction
-- Engine-wise health visualization
-- Sensor degradation trend plots
-- Maintenance risk classification
-- CSV batch upload for bulk predictions
+- Real-time Remaining Useful Life (RUL) prediction  
+- Sensor trend visualization  
+- Maintenance risk classification  
+- Batch CSV predictions  
 
 ---
 
 ## License
-
-MIT License. See LICENSE for details.
+MIT License — see `LICENSE` file for details.
 
 ---
 
 ## Acknowledgments
-
-NASA Prognostics Center
-CMAPSS Dataset (2008)
-scikit-learn, LightGBM, Streamlit
+- NASA Prognostics Data Repository  
+- CMAPSS Dataset (2008)  
+- scikit-learn, LightGBM, Streamlit  
 
 ---
