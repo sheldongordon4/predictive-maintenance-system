@@ -32,6 +32,14 @@ jobs:
         # in monitor_engine.py, not to validate model output.
         run: |
           streamlit run monitor_engine.py --server.headless true --server.port 8501 &
-          sleep 8
-          curl -sf http://localhost:8501 > /dev/null && echo "App responded OK"
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8501 > /dev/null; then
+              echo "App responded OK after ${i}s"
+              kill %1 || true
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "App did not respond within 30s"
           kill %1 || true
+          exit 1
