@@ -195,6 +195,18 @@ Features:
 - Maintenance risk classification  
 - Batch CSV predictions  
 
+**Which CSV to upload:** the two sample files in this repo serve different
+purposes and both pass schema validation, but only one supports every
+feature:
+- `training_data.csv` — full run-to-failure trajectories (many cycles per
+  engine). Upload this to see everything, including the per-engine "Sensor
+  Over Time" trend chart.
+- `test_data.csv` — a single-cycle snapshot per engine (one row per
+  engine, used for the model's held-out evaluation). Works fine for the RUL
+  table and risk classification, but the "Sensor Over Time" chart has
+  nothing to plot a trend from and will show an explanatory message instead
+  of a graph — this is expected, not a bug.
+
 ---
 
 ## License
