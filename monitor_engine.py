@@ -7,6 +7,14 @@ import seaborn as sns
 
 import pipeline
 
+# Must be the first Streamlit command in the script, before anything else
+# that could emit a Streamlit UI element -- including get_artifacts() below,
+# whose @st.cache_resource(show_spinner=...) shows a spinner (itself a
+# Streamlit command) on a cache miss, which would otherwise become the de
+# facto "first command" and make this call raise
+# StreamlitSetPageConfigMustBeFirstCommandError.
+st.set_page_config(page_title="Engine Health Dashboard", layout="wide")
+
 # Set Pandas display options (updated to support enough elements)
 pd.set_option("styler.render.max_elements", 600000)
 
@@ -43,9 +51,6 @@ try:
 except FileNotFoundError as e:
     st.error(str(e))
     st.stop()
-
-# Set page configuration
-st.set_page_config(page_title="Engine Health Dashboard", layout="wide")
 
 # Title and description
 st.title("Engine Health Monitoring Dashboard")

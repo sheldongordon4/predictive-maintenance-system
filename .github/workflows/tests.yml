@@ -22,24 +22,13 @@ jobs:
         run: python -m py_compile pipeline.py monitor_engine.py
 
       - name: Run unit tests
+        # Includes tests/test_monitor_engine.py, which uses Streamlit's
+        # AppTest to actually execute monitor_engine.py's script and assert
+        # no exception -- unlike a `curl` check against a running
+        # `streamlit run` process (removed from here after it turned out to
+        # report success even when the script itself was crashing: the
+        # initial HTTP response is just the static page shell, served
+        # before the Python script runs at all). Since no model artifacts
+        # are committed, this exercises the "artifacts missing" error path
+        # (pipeline.load_artifacts -> st.error + st.stop) here in CI.
         run: pytest
-
-      - name: Smoke-test that the Streamlit app boots
-        # lightgbm_model.pkl / preprocessor.pkl are gitignored and not
-        # present in CI, so this exercises the "artifacts missing" error
-        # path (pipeline.load_artifacts -> st.error + st.stop) rather than
-        # real predictions -- it's here to catch a crash/syntax regression
-        # in monitor_engine.py, not to validate model output.
-        run: |
-          streamlit run monitor_engine.py --server.headless true --server.port 8501 &
-          for i in $(seq 1 30); do
-            if curl -sf http://localhost:8501 > /dev/null; then
-              echo "App responded OK after ${i}s"
-              kill %1 || true
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "App did not respond within 30s"
-          kill %1 || true
-          exit 1
