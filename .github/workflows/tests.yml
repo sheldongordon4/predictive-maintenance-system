@@ -1,0 +1,37 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check syntax (pipeline.py, monitor_engine.py)
+        run: python -m py_compile pipeline.py monitor_engine.py
+
+      - name: Run unit tests
+        run: pytest
+
+      - name: Smoke-test that the Streamlit app boots
+        # lightgbm_model.pkl / preprocessor.pkl are gitignored and not
+        # present in CI, so this exercises the "artifacts missing" error
+        # path (pipeline.load_artifacts -> st.error + st.stop) rather than
+        # real predictions -- it's here to catch a crash/syntax regression
+        # in monitor_engine.py, not to validate model output.
+        run: |
+          streamlit run monitor_engine.py --server.headless true --server.port 8501 &
+          sleep 8
+          curl -sf http://localhost:8501 > /dev/null && echo "App responded OK"
+          kill %1 || true

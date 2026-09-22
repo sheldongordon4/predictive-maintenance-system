@@ -22,6 +22,14 @@ venv/
 *.zip
 *.npy
 
+# ...except the small CMAPSS sample CSVs checked in for demoing the app and
+# tests (training_data.csv / test_data.csv are already tracked; this just
+# makes that intentional instead of an unexplained exception to the *.csv
+# rule above). Large/generated CSVs should still not be added -- if you need
+# one tracked, add it explicitly rather than widening this pattern.
+!training_data.csv
+!test_data.csv
+
 # Environment / secrets
 .env
 *.secret
