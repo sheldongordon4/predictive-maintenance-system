@@ -162,7 +162,7 @@ if uploaded_file is not None:
             )
         else:
             fig2, ax2 = plt.subplots()
-            sns.lineplot(data=sensor_data, x="cycle_time", y=selected_sensor, marker="o", markersize=4, ax=ax2)
+            sns.lineplot(data=sensor_data, x="cycle_time", y=selected_sensor, marker="o", markersize=3, ax=ax2)
             st.pyplot(fig2)
             plt.close(fig2)
     else:
