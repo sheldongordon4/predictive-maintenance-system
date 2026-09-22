@@ -149,10 +149,22 @@ if uploaded_file is not None:
         sensor_data = engine_df[["cycle_time", selected_sensor]]
 
         st.subheader(f"{selected_sensor} Over Time for Engine {selected_engine}")
-        fig2, ax2 = plt.subplots()
-        sns.lineplot(data=sensor_data, x="cycle_time", y=selected_sensor, ax=ax2)
-        st.pyplot(fig2)
-        plt.close(fig2)
+        if len(sensor_data) < 2:
+            # A line plot with 0-1 points renders as a blank chart with no
+            # visible explanation -- e.g. this always happens for
+            # test_data.csv, which has exactly one row (cycle) per engine.
+            st.info(
+                f"Engine {selected_engine} has only {len(sensor_data)} recorded "
+                "cycle(s) in this file, so there's no trend to plot. Upload a "
+                "file with multiple rows per engine (e.g. training_data.csv, "
+                "or the full test_data.txt trajectories) to see sensor trends "
+                "over time."
+            )
+        else:
+            fig2, ax2 = plt.subplots()
+            sns.lineplot(data=sensor_data, x="cycle_time", y=selected_sensor, marker="o", ax=ax2)
+            st.pyplot(fig2)
+            plt.close(fig2)
     else:
         st.warning(f"{selected_sensor} not found for Engine {selected_engine}")
 
