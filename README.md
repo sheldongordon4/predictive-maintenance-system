@@ -198,13 +198,21 @@ Features:
 ---
 
 ## License
-MIT License — see `LICENSE` file for details.
+MIT License for the source code in this repository — see `LICENSE` file for
+details. **This does not extend to the NASA C-MAPSS dataset files** included
+here (`train_data.txt`, `test_data.txt`, `rul_data.txt`, `training_data.csv`,
+`test_data.csv`); see Acknowledgments below for the citation, and check
+NASA's data repository directly for that data's own current usage terms.
 
 ---
 
 ## Acknowledgments
-- NASA Prognostics Data Repository  
-- CMAPSS Dataset (2008)  
-- scikit-learn, LightGBM, Streamlit  
+- Dataset: NASA Prognostics Center of Excellence (PCoE), C-MAPSS Turbofan
+  Engine Degradation Simulation Data Set. Please cite:
+  > A. Saxena, K. Goebel, D. Simon, and N. Eklund, "Damage Propagation
+  > Modeling for Aircraft Engine Run-to-Failure Simulation," in *Proceedings
+  > of the International Conference on Prognostics and Health Management
+  > (PHM08)*, Denver, CO, Oct 2008.
+- scikit-learn, LightGBM, Streamlit
 
 ---
