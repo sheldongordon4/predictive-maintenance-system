@@ -2,7 +2,6 @@ import io
 
 import streamlit as st
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -62,10 +61,19 @@ if uploaded_file is not None:
     try:
         df_predict = compute_predictions(uploaded_file.getvalue())
     except ValueError as e:
+        # Covers essentially every "something's wrong with this data" case:
+        # pandas' own CSV-parse errors (ParserError, EmptyDataError,
+        # UnicodeDecodeError) and sklearn's dtype/NaN/inf validation errors
+        # are all ValueError subclasses, as is pipeline.validate_schema's
+        # missing-column error -- so `e` already carries a specific,
+        # actionable message in every one of those cases.
         st.error(str(e))
         st.stop()
     except Exception as e:
-        st.error(f"Could not read the uploaded file as CSV: {e}")
+        # Anything else (e.g. a LightGBM-internal error, which is NOT a
+        # ValueError) is a genuine surprise, not a data problem -- don't
+        # guess at a cause we don't actually know.
+        st.error(f"Unexpected error while processing the uploaded file: {e}")
         st.stop()
 
     # `df` and `df_predict` are the same underlying data (raw sensor columns

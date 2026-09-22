@@ -153,6 +153,26 @@ class TestPredictRul:
         with pytest.raises(ValueError):
             pl.predict_rul(df, preprocessor, model)
 
+    def test_nan_values_are_imputed_not_propagated(self, fitted_preprocessor_and_model):
+        # The whole point of shipping the fitted SimpleImputer is that a
+        # missing sensor reading gets filled in, not passed through as NaN.
+        preprocessor, model = fitted_preprocessor_and_model
+        df = make_raw_df()
+        df.loc[0, 'T30'] = np.nan
+        result = pl.predict_rul(df, preprocessor, model)
+        assert not result.isna().any()
+
+    def test_column_order_does_not_affect_predictions(self, fitted_preprocessor_and_model):
+        # Uploaded CSVs select columns by name (MODEL_FEATURES), not
+        # position, so a differently-ordered header must not change results.
+        preprocessor, model = fitted_preprocessor_and_model
+        df = make_raw_df()
+        df_reordered = df[list(df.columns)[::-1]]
+        pd.testing.assert_series_equal(
+            pl.predict_rul(df, preprocessor, model),
+            pl.predict_rul(df_reordered, preprocessor, model),
+        )
+
 
 class TestLoadArtifacts:
     def test_raises_informative_error_when_both_missing(self, tmp_path):
