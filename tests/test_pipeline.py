@@ -45,6 +45,28 @@ class TestColumnConstants:
         # Catches a typo in FEATURES_TO_DROP that would silently no-op.
         assert set(pl.FEATURES_TO_DROP) <= set(pl.RAW_COLUMNS)
 
+    def test_raw_columns_and_features_to_drop_are_immutable(self):
+        # These must be tuples so nothing can .append()/mutate them in
+        # place after MODEL_FEATURES has already been derived from them --
+        # that would make later reads of them disagree with MODEL_FEATURES
+        # without either raising an error or updating the other.
+        assert isinstance(pl.RAW_COLUMNS, tuple)
+        assert isinstance(pl.FEATURES_TO_DROP, tuple)
+        with pytest.raises(AttributeError):
+            pl.RAW_COLUMNS.append('sneaky')
+        with pytest.raises(AttributeError):
+            pl.FEATURES_TO_DROP.append('sneaky')
+
+    def test_model_features_is_specifically_a_list_not_a_tuple(self):
+        # Deliberate asymmetry with the two constants above: MODEL_FEATURES
+        # is used as a pandas column selector (`df[MODEL_FEATURES]` in
+        # predict_rul). `df[<tuple>]` is NOT the same as `df[<list>]` --
+        # pandas treats a tuple key as a single MultiIndex-style lookup and
+        # raises KeyError instead of selecting multiple columns. If this
+        # test ever needs to change, first re-verify df[<tuple-of-names>]
+        # actually selects multiple columns in the pandas version in use.
+        assert isinstance(pl.MODEL_FEATURES, list)
+
     def test_cycle_time_is_a_model_feature_but_eol_is_not(self):
         # cycle_time is a genuine predictive feature; EOL only ever exists
         # as a training-time intermediate and must never reach the model.

@@ -24,23 +24,38 @@ import pandas as pd
 
 # Raw CMAPSS column names, in file order (matches train_data.txt /
 # test_data.txt / training_data.csv / test_data.csv).
-RAW_COLUMNS = [
+#
+# Tuple, not list: these are read repeatedly (by both this module and the
+# notebook) as *the* definition of "what a raw column is". A list would let
+# something accidentally `.append()`/mutate it in place, which wouldn't
+# retroactively change MODEL_FEATURES below (computed once, at import time)
+# but WOULD make later reads of RAW_COLUMNS/FEATURES_TO_DROP disagree with
+# it -- the exact kind of silent drift this module exists to prevent.
+RAW_COLUMNS = (
     "engine_id", "cycle_time", "op_set_1", "op_set_2", "op_set_3",
     "T2", "T24", "T30", "T50", "P2", "P15", "P30", "Nf", "Nc", "epr",
     "Ps30", "phi", "NRf", "NRc", "BPR", "farB", "htBleed", "Nf_dmd",
     "PCNfR_dmd", "W31", "W32",
-]
+)
 
 # Columns dropped before modeling: identifiers, operational settings, and
 # sensors that are constant/near-constant in this dataset. This must stay
 # identical to what was used to produce preprocessor.pkl / lightgbm_model.pkl
 # -- changing it means retraining and re-exporting both artifacts.
-FEATURES_TO_DROP = [
+# Tuple for the same reason as RAW_COLUMNS above.
+FEATURES_TO_DROP = (
     "engine_id", "op_set_1", "op_set_2", "op_set_3",
     "T2", "P2", "P15", "epr", "farB", "Nf_dmd", "PCNfR_dmd",
-]
+)
 
 # The exact feature columns, in the exact order, the model was trained on.
+#
+# Deliberately a LIST, not a tuple, unlike the two constants above: this is
+# used directly as a pandas column selector (`df[MODEL_FEATURES]` in
+# predict_rul below). `df[<tuple>]` is NOT equivalent to `df[<list>]` --
+# pandas treats a tuple key as a single (MultiIndex-style) lookup and raises
+# KeyError, rather than selecting multiple columns by name. Confirmed this
+# empirically before choosing list here; don't "fix" it to a tuple.
 MODEL_FEATURES = [c for c in RAW_COLUMNS if c not in FEATURES_TO_DROP]
 
 MODEL_FILENAME = "lightgbm_model.pkl"
